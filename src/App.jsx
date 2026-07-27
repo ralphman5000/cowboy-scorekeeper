@@ -175,6 +175,14 @@ function ScoreGame({ players, exact90, dramaticFinish, onReset }) {
     setHistory((prev) => prev.slice(0, -1));
   };
 
+  const handleUndo = () => {
+    if (history.length > 0) {
+      undoLastShot();
+    } else {
+      undoLastTurn();
+    }
+  };
+
   const endTurn = () => {
     if (winner !== null) return;
     let newScore = projectedScore;
@@ -192,6 +200,8 @@ function ScoreGame({ players, exact90, dramaticFinish, onReset }) {
     setScores((prev) => { const next = [...prev]; next[currentPlayer] = TARGET; return next; });
     setWinner(currentPlayer);
   };
+
+  const canUndo = history.length > 0 || !!lastTurnSnapshot;
 
   return (
     <div style={styles.gameContainer}>
@@ -220,14 +230,6 @@ function ScoreGame({ players, exact90, dramaticFinish, onReset }) {
           );
         })}
       </div>
-
-      {lastTurnSnapshot && (
-        <div style={styles.undoTurnRow}>
-          <button style={styles.undoTurnBtn} onClick={undoLastTurn}>
-            ↩ Undo last turn — restore {players[lastTurnSnapshot.currentPlayer]}'s turn
-          </button>
-        </div>
-      )}
 
       {winner === null && (
         <>
@@ -262,6 +264,7 @@ function ScoreGame({ players, exact90, dramaticFinish, onReset }) {
                 </p>
                 <button style={styles.winningShotBtn} onClick={handleWinningShot}>🎱 Winning Shot!</button>
                 <div style={styles.actionRow}>
+                  <button style={{ ...styles.undoBtn, opacity: canUndo ? 1 : 0.35 }} disabled={!canUndo} onClick={handleUndo}>↩ Undo</button>
                   <button style={styles.scratchBtn} onClick={() => scratch()}>😬 Scratch</button>
                   <button style={styles.endTurnBtn} onClick={endTurn}>End Turn ✓</button>
                 </div>
@@ -305,7 +308,7 @@ function ScoreGame({ players, exact90, dramaticFinish, onReset }) {
 
             {!winningShot && (
               <div style={styles.actionRow}>
-                <button style={{ ...styles.undoBtn, opacity: history.length > 0 ? 1 : 0.35 }} disabled={history.length === 0} onClick={undoLastShot}>↩ Undo</button>
+                <button style={{ ...styles.undoBtn, opacity: canUndo ? 1 : 0.35 }} disabled={!canUndo} onClick={handleUndo}>↩ Undo</button>
                 <button style={styles.scratchBtn} onClick={() => scratch()}>😬 Scratch</button>
                 <button style={styles.endTurnBtn} onClick={endTurn}>End Turn ✓</button>
               </div>
@@ -361,8 +364,6 @@ const styles = {
   playerScore: { color: "#e8d5a0", fontSize: "32px", fontWeight: "bold", lineHeight: 1, marginBottom: "8px" },
   scoreBar: { height: "4px", background: "#1a2e1f", borderRadius: "2px", overflow: "hidden" },
   scoreBarFill: { height: "100%", borderRadius: "2px", transition: "width 0.4s ease" },
-  undoTurnRow: { padding: "0 16px 4px 16px" },
-  undoTurnBtn: { width: "100%", background: "#2a2a3a", border: "1px solid #4a4a6a", borderRadius: "10px", color: "#a0a0d0", padding: "10px 14px", fontSize: "13px", cursor: "pointer", fontFamily: "'Georgia', serif", textAlign: "center" },
   banner: { margin: "8px 16px 0 16px", borderRadius: "10px", padding: "10px 14px", fontSize: "13px", textAlign: "center" },
   bannerAmber: { background: "#3a2a10", border: "1px solid #7a5a20", color: "#e8c060" },
   bannerGold: { background: "#2e2a10", border: "1px solid #c8a820", color: "#f5d060" },
