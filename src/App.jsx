@@ -1,9 +1,9 @@
 import { useRef, useState } from "react";
 
 const BALLS = [
-  { id: "b1", label: "1", points: 1 },
-  { id: "b3", label: "3", points: 3 },
-  { id: "b5", label: "5", points: 5 },
+  { id: "b1", label: "1", points: 1, bg: "#d4a800", border: "#a07800", numColor: "#1a1a00", ptsColor: "#5a4400" },
+  { id: "b3", label: "3", points: 3, bg: "#c02020", border: "#8a1010", numColor: "#fff0f0", ptsColor: "#ffaaaa" },
+  { id: "b5", label: "5", points: 5, bg: "#c85a00", border: "#8a3a00", numColor: "#fff0e0", ptsColor: "#ffbb88" },
 ];
 
 const CAROMS = [
@@ -176,11 +176,8 @@ function ScoreGame({ players, exact90, dramaticFinish, onReset }) {
   };
 
   const handleUndo = () => {
-    if (history.length > 0) {
-      undoLastShot();
-    } else {
-      undoLastTurn();
-    }
+    if (history.length > 0) undoLastShot();
+    else undoLastTurn();
   };
 
   const endTurn = () => {
@@ -276,11 +273,19 @@ function ScoreGame({ players, exact90, dramaticFinish, onReset }) {
                   {BALLS.map((b) => (
                     <button
                       key={b.id}
-                      style={{ ...styles.ballBtn, opacity: caromOnly ? 0.65 : 1, cursor: "pointer" }}
+                      style={{
+                        ...styles.ballBtn,
+                        background: caromOnly ? "#2a2a2a" : b.bg,
+                        border: `2px solid ${caromOnly ? "#444" : b.border}`,
+                        opacity: caromOnly ? 0.65 : 1,
+                        cursor: "pointer",
+                      }}
                       onClick={() => caromOnly ? scratch() : addPoints(b.points, `Ball ${b.label}`, "ball")}
                     >
-                      <span style={styles.ballNum}>{b.label}</span>
-                      <span style={styles.ballPts}>{caromOnly ? "SCRATCH" : `+${b.points} pt${b.points > 1 ? "s" : ""}`}</span>
+                      <span style={{ ...styles.ballNum, color: caromOnly ? "#888" : b.numColor }}>{b.label}</span>
+                      <span style={{ ...styles.ballPts, color: caromOnly ? "#666" : b.ptsColor }}>
+                        {caromOnly ? "SCRATCH" : `+${b.points} pt${b.points > 1 ? "s" : ""}`}
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -376,9 +381,9 @@ const styles = {
   flashMsg: { position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", textAlign: "center", fontSize: "36px", fontWeight: "bold", color: "#e8d5a0", letterSpacing: "4px", padding: "12px 24px", background: "rgba(26, 46, 31, 0.85)", borderRadius: "16px", pointerEvents: "none", zIndex: 100 },
   sectionLabel: { color: "#5a8a6a", fontSize: "11px", letterSpacing: "3px", fontWeight: "bold", paddingLeft: "2px" },
   ballButtons: { display: "flex", gap: "10px" },
-  ballBtn: { flex: 1, background: "#2e4535", border: "2px solid #3a5a42", borderRadius: "14px", padding: "16px 8px", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", transition: "opacity 0.2s" },
-  ballNum: { color: "#e8d5a0", fontSize: "28px", fontWeight: "bold" },
-  ballPts: { color: "#7a9a82", fontSize: "12px" },
+  ballBtn: { flex: 1, borderRadius: "14px", padding: "16px 8px", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", transition: "opacity 0.2s" },
+  ballNum: { fontSize: "28px", fontWeight: "bold" },
+  ballPts: { fontSize: "12px" },
   caromButtons: { display: "flex", gap: "10px" },
   caromBtn: { flex: 1, background: "#2a3d4a", border: "2px solid #3a5566", borderRadius: "14px", padding: "14px 8px", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "3px" },
   caromLabel: { color: "#a0c8e0", fontSize: "13px", fontWeight: "bold" },
